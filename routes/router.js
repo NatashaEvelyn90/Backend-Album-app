@@ -11,6 +11,9 @@ router.get('/api', (req, res) => {
     })
 }) 
 
+router.use('/api/album', require('./api/albumRoutes'))
+
+//! This is our ERROR handling section 
 router.use((req, res, next) => {
     res.status(404)
     .send('<h1>404 Error, this page does not exist </h1>')
