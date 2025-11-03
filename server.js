@@ -2,6 +2,7 @@
 //? Whenever you are building a server, you need to start these lines 
 const express = require('express')
 const server = express()
+const router = require('./routes/router')
 const PORT = process.env.PORT || 3000
 
 //! Handling the security aspect
@@ -24,5 +25,8 @@ server.use(helmet.contentSecurityPolicy({
 server.use(cors())
 server.use(express.json())
 server.use(express.urlencoded({extended: true}))
+
+//! localhost:3000 
+server.use('/', router)
 
 server.listen(PORT, ()=> console.log(`Party like a rockstar!`))
