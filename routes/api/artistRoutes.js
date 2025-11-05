@@ -21,4 +21,10 @@ router.get('/:id', (req, res)=> {
     dao.findById(res, dao.table, req.params.id)
 })
 
+//! GET requests should be at the top; POST requests after
+//? http://localhost:3000/api/artist/create 
+router.post('/create', (req, res)=> {
+    dao.create(req, res, dao.table)
+}) 
+
 module.exports = router
