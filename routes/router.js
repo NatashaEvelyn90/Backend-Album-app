@@ -11,6 +11,15 @@ router.get('/', (req, res)=> {
     })
 })
 
+//? Artist form = http://localhost:3000/artist-form
+router.get('/artist-form', (req, res)=> {
+    res.render('pages/artist-form', {
+        title: 'artist form',
+        name: 'artist-form'
+    })
+}) 
+
+
 //! We are going to be creating the root route of the API
 //? root route http://localhost:3000/api
 router.get('/api', (req, res) => {

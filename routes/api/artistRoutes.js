@@ -35,4 +35,10 @@ router.patch('/update/:id', (req, res)=> {
     dao.update(req, res, dao.table)
 })
 
+//! Delete. Try not to use this
+
+router.delete('/delete/:id', (req, res)=> {
+    dao.delete(res, dao.table, req.params.id)
+})
+
 module.exports = router
