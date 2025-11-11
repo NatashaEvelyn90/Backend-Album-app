@@ -23,10 +23,12 @@ server.use(helmet.contentSecurityPolicy({
 
 // server.use(helmet())
 server.use(cors())
-
 //? url address and parse it and format it into Json. without these, the objects wouldn't work?
 server.use(express.json())
 server.use(express.urlencoded({extended: true}))
+
+//! Setting EJS as my view engine 
+server.set('view engine', 'ejs')
 
 //! localhost:3000 
 server.use('/', router)
