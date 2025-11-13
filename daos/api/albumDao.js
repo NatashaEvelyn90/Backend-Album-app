@@ -47,54 +47,62 @@ const albumDao = {
 
         createAlbum: (req, res, table)=> {
 
-            // capture fName, lName, band and label
+            //! capture fName, lName, band and label
             const fName = req.body.fName
             const lName = req.body.lName
             const band = req.body.band
             const label = req.body.label
 
-            const data = {
+            let data = {
                 artist_id: null,
                 band_id: null,
                 label_id: null,
             }
 
             
+            let artist = {}
             
             
             // check in the artist table first if it is in the database
         con.execute(`
                 SELECT * FROM artist;`,
                 (error, rows)=> {
-                let artist
                 if (!error) { // if NO error
-                    // find artist where fName and lName are the same as artist.fName and artist.lName
-                    if (fName != null && lName != null) {
+                    //* find artist where fName and lName are the same as artist.fName and artist.lName
+                    if (fName != null || lName != null) {
                         artist = rows.find(artist => artist.fName == fName && artist.lName == lName)                     
-                        // if artist is undefined add to artist table
+                        //* if artist is undefined add to artist table
                         console.log(artist)
                         if(artist == undefined) {
                             console.log('artist is undenfined')
                             con.execute(
-                                `INSERT INTO artist SET fName = '${fName}', lName = '${lName}';`,
+                                `INSERT INTO artist SET fName = "${fName}", lName = "${lName}";`,
                                 (error, dbres) => {
                                     if(!error) {
                                         console.log(dbres.insertId)
                                         data.artist_id = dbres.insertId
+                                    } else {
+                                        console.log(error)
                                     }
                                 }
                             )
-                        } else {
-                            data.artist_id = artist.artist_id
+                        
+                            
                         }
+                        
                     }
-                    res.json(data)
                     
                 }
-                
             }
         )
-        }
+            // data.artist_id = artist.artist_id
+            data = {
+                artist_id: artist.artist_id,
+                band_id: null,
+                label_id: null
+            }
+            res.json(data)
+    }
 }
 
 
