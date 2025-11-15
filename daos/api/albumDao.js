@@ -33,9 +33,10 @@ const albumDao = {
                 }
             )
     },
+
     findAlbumsByArtistId: (res, table, id)=> {
     
-            const sql = `SELECT title, album_id, yr_released FROM ${table} WHERE artist_id = ${id};`
+        const sql = `SELECT title, album_id, yr_released FROM ${table} WHERE artist_id = ${id};`
     
             con.query(
                 sql,
@@ -43,70 +44,116 @@ const albumDao = {
                     queryAction(res, error, rows, table)
                 }
             )
-        },
+    },
 
     createAlbum: (req, res, table)=> {
 
-            //! capture fName, lName, band and label
-            const fName = req.body.fName
-            const lName = req.body.lName
-            const band = req.body.band
-            const label = req.body.label
-
-            let data = {
-                artist_id: null,
-                band_id: null,
-                label_id: null,
-            }
-
-            
-            let artist = {}
-            
-            
-            // check in the artist table first if it is in the database
-        con.execute(`
-                SELECT * FROM artist;`,
-                (error, rows)=> {
-
-                    data.artist_id=()=> {
-                        if (!error) { // if NO error
-                            //* find artist where fName and lName are the same as artist.fName and artist.lName
-                            if (fName != null || lName != null) {
-
-                    }
+    //! capture fName, lName, band and label
+    const fName = req.body.fName
+    const lName = req.body.lName
+    const band = req.body.band
+    const label = req.body.label
+    
+    //! need an objec that will hold data to be added to album table 
+    let albumInfo = {
+        title: req.body.title,
+        artist_id: null,
+        band_id: null,
+        label_id: null,
+        yr_released: req. body.yr_released
+    }
+    
+    //! check in the artist table first if it is in the database. If it is, return the artist_id. If not, add the artist and return the artist id
+    const artistId = con.execute(`
+        SELECT * FROM artist;`,
+        (error, rows)=> {
+            let artist
+            let id
+                if (!error) { // if NO error
+                    //* find artist where fName and lName are the same as artist.fName and artist.lName
+                    if (fName != null || lName != null) {
                         artist = rows.find(artist => artist.fName == fName && artist.lName == lName)                     
-                        //* if artist is undefined add to artist table
-                        if(artist == undefined) {
+    
+                        if(artist == undefined) { //* if artist is undefined/no match; add to artist table
                             con.execute(
                                 `INSERT INTO artist SET fName = "${fName}", lName = "${lName}";`,
                                 (error, dbres) => {
                                     if(!error) {
-                                        data.artist_id = dbres.insertId
-                                        console.log(dbres.insertId)
-                                    } else {
+                                        id = dbres.insertId
+                                        return id
+                                    }else{
                                         console.log(error)
-                                    }
-                                }
-                            )                                              
-                            res.json(data)
-                        }                       
-                    }
-                    data.artist_id = artist.artist_id
-                }
-                return data.artist_id
-            }
+                                    }                                        
+                                } 
+                            )
+                            console.log(artistId)        
+                            albumInfo.artist_id = artistId
+    
+                            res.json(albuminfo)    
+                        }
+                    }                                              
+                }                       
+            }          
         )
-        console.log(`the artist_id is ${data.artist_id}`)
-            // data.artist_id = artist.artist_id
-            // data = {
-            //     artist_id: artist.artist_id,
-            //     band_id: null,
-            //     label_id: null
-            // }
     }
 }
 
 
 
-
 module.exports = albumDao
+
+// * Crazpicc notes. This is what we had previously
+
+// const fName = req.body.fName
+//         const lName = req.body.lName
+//         const band = req.body.band
+//         const label = req.body.label
+
+//         let data = {
+//             artist_id: null,
+//             band_id: null,
+//             label_id: null
+//         }
+//         let artist = {}
+
+        // check in artist table
+//         con.execute(
+//             `SELECT * FROM artist;`,
+//             (error, rows)=> {
+
+//                 data.artist_id =()=> {
+//                     if (!error) {
+                    //  find artist where fName and lName are the same as artist.fName and artist.lName
+//                         if (fName != null || lName != null) {
+//                             artist = rows.find(artist => artist.fName == fName && artist.lName == lName)
+                        // if artist is undefined add to artist table
+//                             console.log(`artist: ${artist}`)
+//                             if (artist == undefined) {
+//                             con.execute(
+//                                 `INSERT INTO artist SET fName = "${fName}", lName = "${lName}";`,
+//                                 (error, dbres)=> {
+//                                     if (!error) {
+//                                         artist.artist_id = dbres.insertId
+//                                         console.log(`artist has been added. artist_id is ${artist.artist_id}`)
+//                                     } else {
+//                                         console.log(error)
+//                                     }
+//                                 }
+//                             )
+//                             }   
+//                         }
+//                     }
+//                     return artist.artist_id
+//                 }
+                
+                // return data.artist_id
+//             }
+//         )
+//         console.log(`the artist_id is ${data.artist_id}`)
+        // data.artist_id = artist.artist_id
+        // data = {
+        //     artist_id: artist.artist_id,
+        //     band_id: null,
+        //     label_id: null
+        // }
+//         res.json(data)
